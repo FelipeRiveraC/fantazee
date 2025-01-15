@@ -1,45 +1,46 @@
+import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const HomeLayout = () => {
+const HomeLayout: React.FC = () => {
   const { user, logout } = useAuth();
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="bg-gray-900 text-white min-h-screen flex flex-col">
       {/* Navbar */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-gray-800 shadow-md">
         <nav className="container mx-auto flex items-center justify-between py-4 px-6">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold text-blue-600">
-            ThumbsUP
+          <Link to="/" className="text-3xl font-bold text-white">
+            Fantazee
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex space-x-6">
+          <div className="flex items-center space-x-4">
             {user ? (
               <>
-                <Link to="/profile" className="text-gray-700 hover:text-blue-600 transition">
+                <Link to="/profile" className="text-base font-medium text-gray-300 hover:text-white transition">
                   Profile
                 </Link>
-                <Link to="/travels" className="text-gray-700 hover:text-blue-600 transition">
-                  Travels
+                <Link to="/league" className="text-base font-medium text-gray-300 hover:text-white transition">
+                  My League
                 </Link>
-                <Link to="/travels/new" className="text-gray-700 hover:text-blue-600 transition">
-                  Create Travel
+                <Link to="/league/new" className="text-base font-medium text-gray-300 hover:text-white transition">
+                  Create League
                 </Link>
                 <button
                   onClick={logout}
-                  className="text-gray-700 hover:text-red-600 transition"
+                  className="text-base font-medium text-red-400 hover:text-red-500 transition"
                 >
                   Logout
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="text-gray-700 hover:text-blue-600 transition">
+                <Link to="/login" className="text-base font-medium text-gray-300 hover:text-white transition">
                   Login
                 </Link>
-                <Link to="/register" className="text-gray-700 hover:text-blue-600 transition">
+                <Link to="/register" className="text-base font-medium text-gray-300 hover:text-white transition">
                   Register
                 </Link>
               </>
@@ -49,13 +50,15 @@ const HomeLayout = () => {
       </header>
 
       {/* Page Content */}
-      <main className="flex-grow container mx-auto p-6">
+      <main className="flex-grow container mx-auto py-10 px-6">
         <Outlet />
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white text-center py-4 mt-auto">
-        <p className="text-sm">&copy; 2024 ThumbsUP. All rights reserved.</p>
+      <footer className="bg-gray-800 py-6 text-center">
+        <p className="text-gray-400 text-sm">
+          &copy; {new Date().getFullYear()} Fantazee. All rights reserved.
+        </p>
       </footer>
     </div>
   );

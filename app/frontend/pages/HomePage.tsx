@@ -74,10 +74,6 @@ const HomePage: React.FC = () => {
           </div>
         </section>
       </main>
-
-      <footer className="w-full py-4 bg-gray-800 text-center text-gray-500 text-sm">
-        &copy; {new Date().getFullYear()} Fantazee. All rights reserved.
-      </footer>
     </div>
   );
 };

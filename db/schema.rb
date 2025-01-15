@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_12_07_181415) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_15_025326) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -23,6 +23,66 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_07_181415) do
     t.enum "status", default: "UNSTARTED", null: false, enum_type: "engagement_status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "matches", id: :string, force: :cascade do |t|
+    t.integer "api_id", null: false
+    t.date "date", null: false
+    t.string "league", null: false
+    t.string "season", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["api_id"], name: "index_matches_on_api_id", unique: true
+  end
+
+  create_table "player_statistics", id: :string, force: :cascade do |t|
+    t.string "player_id", null: false
+    t.string "match_id", null: false
+    t.integer "games_minutes"
+    t.integer "games_number"
+    t.string "games_position"
+    t.string "games_rating"
+    t.boolean "games_captain", default: false
+    t.boolean "games_substitute", default: false
+    t.integer "shots_total"
+    t.integer "shots_on"
+    t.integer "goals_total"
+    t.integer "goals_conceded"
+    t.integer "goals_assists"
+    t.integer "goals_saves"
+    t.integer "passes_total"
+    t.integer "passes_key"
+    t.string "passes_accuracy"
+    t.integer "tackles_total"
+    t.integer "tackles_blocks"
+    t.integer "tackles_interceptions"
+    t.integer "duels_total"
+    t.integer "duels_won"
+    t.integer "dribbles_attempts"
+    t.integer "dribbles_success"
+    t.integer "dribbles_past"
+    t.integer "fouls_drawn"
+    t.integer "fouls_committed"
+    t.integer "cards_yellow"
+    t.integer "cards_red"
+    t.integer "penalty_won"
+    t.integer "penalty_committed"
+    t.integer "penalty_scored"
+    t.integer "penalty_missed"
+    t.integer "penalty_saved"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["match_id"], name: "index_player_statistics_on_match_id"
+    t.index ["player_id"], name: "index_player_statistics_on_player_id"
+  end
+
+  create_table "players", id: :string, force: :cascade do |t|
+    t.integer "api_id", null: false
+    t.string "name", null: false
+    t.string "photo_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["api_id"], name: "index_players_on_api_id", unique: true
   end
 
   create_table "travel_chat_messages", id: :string, force: :cascade do |t|
@@ -101,6 +161,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_07_181415) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "player_statistics", "matches"
+  add_foreign_key "player_statistics", "players"
   add_foreign_key "travel_chat_messages", "travels"
   add_foreign_key "travel_chat_messages", "users", column: "sender_id"
   add_foreign_key "travel_evaluations", "travels"

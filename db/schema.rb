@@ -10,13 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_15_025326) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_16_123250) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "engagement_status", ["UNSTARTED", "ACTIVE", "COMPLETE"]
+
+  create_table "draft_teams", id: :string, force: :cascade do |t|
+    t.string "user_id", null: false
+    t.string "name", null: false
+    t.string "league", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_draft_teams_on_user_id"
+  end
 
   create_table "engagements", force: :cascade do |t|
     t.string "name", null: false
@@ -83,6 +92,15 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_15_025326) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["api_id"], name: "index_players_on_api_id", unique: true
+  end
+
+  create_table "players_draft_teams", id: :string, force: :cascade do |t|
+    t.string "draft_team_id", null: false
+    t.string "player_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["draft_team_id"], name: "index_players_draft_teams_on_draft_team_id"
+    t.index ["player_id"], name: "index_players_draft_teams_on_player_id"
   end
 
   create_table "travel_chat_messages", id: :string, force: :cascade do |t|
@@ -161,8 +179,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_15_025326) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "draft_teams", "users"
   add_foreign_key "player_statistics", "matches"
   add_foreign_key "player_statistics", "players"
+  add_foreign_key "players_draft_teams", "draft_teams"
+  add_foreign_key "players_draft_teams", "players"
   add_foreign_key "travel_chat_messages", "travels"
   add_foreign_key "travel_chat_messages", "users", column: "sender_id"
   add_foreign_key "travel_evaluations", "travels"

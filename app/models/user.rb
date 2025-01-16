@@ -8,6 +8,8 @@ class User < ApplicationRecord
   has_many :travels, through: :travels_users
   has_many :travel_evaluations, dependent: :destroy, through: :travels
 
+  has_many :draft_teams, dependent: :destroy
+
   def generate_token
     token = Devise.friendly_token
     update!(token: token)

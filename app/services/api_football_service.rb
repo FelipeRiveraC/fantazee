@@ -5,10 +5,21 @@ class ApiFootballService
     JSON.parse(response.body)
   end
 
-  def get_fixtures(league: nil, live: nil, season: nil, date: nil, team: nil)
-    query = delete_nil_values(league: league, live: live, season: season, date: date, team: team)
+  def get_fixtures(id: nil, ids: nil, league: nil, live: nil, season: nil, date: nil, team: nil)
+    if ids.present?
+      if ids.length > 20
+        raise ArgumentError, "Maximum of 20 fixture IDs allowed"
+      end
+      ids = ids.join('-')
+    end
+    query = delete_nil_values(id: id, ids: ids, league: league, live: live, season: season, date: date, team: team)
     response = client.get("/fixtures", query: query)
     JSON.parse(response.body)
+  end
+
+  def get_fixtures_ids(league: nil, live: nil, season: nil, date: nil, team: nil)
+    response = get_fixtures(league: league, live: live, season: season, date: date, team: team)
+    response["response"].map { |fixture| fixture["fixture"]["id"] }
   end
 
   def get_player_statistics(fixture:, team: nil)

@@ -64,3 +64,6 @@ group :test do
   gem "webdrivers"
   gem "shoulda-matchers"
 end
+
+gem "nio4r", "~> 2.7.0"
+gem "activejob"

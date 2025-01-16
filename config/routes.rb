@@ -22,6 +22,14 @@ Rails.application.routes.draw do
         end
         patch 'requests/:travel_request_id/update_request', to: 'travels#update_request', as: :update_request
       end
+      resources :players, only: [:index, :show] do
+        member do
+          get :statistics
+        end
+        collection do
+          get :search
+        end
+      end
     end
   end
 

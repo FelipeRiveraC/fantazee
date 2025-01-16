@@ -4,7 +4,6 @@ class ProcessPlayerStatisticsJob < ApplicationJob
 
   def perform(fixture_ids)
     Rails.logger.info "Starting ProcessPlayerStatisticsJob for fixtures: #{fixture_ids}"
-    api_service = ApiFootballService.new
     
     Array(fixture_ids).each do |fixture_id|
       Rails.logger.info "Processing fixture ID: #{fixture_id}"
@@ -61,15 +60,30 @@ class ProcessPlayerStatisticsJob < ApplicationJob
   end
 
   def find_or_create_player(player_data)
+    Rails.logger.info "Finding or creating player with API ID: #{player_data['id']}"
+    player_api_data = api_service.get_player_details(player: player_data["id"])
+    return nil unless player_api_data["response"].present?
+    player_data = player_api_data["response"].first["player"]
     Player.find_or_create_by(api_id: player_data["id"]) do |player|
       player.name = player_data["name"]
-      player.photo_url = player_data["photo"]
+      player.photo = player_data["photo"]
+      player.firstname = player_data["firstname"]
+      player.lastname = player_data["lastname"]
+      player.age = player_data["age"]
+      player.birth_date = Date.parse(player_data["birth"]["date"])
+      player.birth_place = player_data["birth"]["place"]
+      player.birth_country = player_data["birth"]["country"]
+      player.nationality = player_data["nationality"]
+      player.height = player_data["height"]
+      player.weight = player_data["weight"]
+      player.number = player_data["number"]
+      player.position = player_data["position"]
     end
   end
 
   def create_player_statistics(player, stats, match_id)
     PlayerStatistic.create!(
-      player_id: player.id,
+      player_id: player.api_id,
       match_id: match_id,
       games_minutes: stats.dig("games", "minutes"),
       games_number: stats.dig("games", "number"),
@@ -106,5 +120,9 @@ class ProcessPlayerStatisticsJob < ApplicationJob
     )
   rescue ActiveRecord::RecordNotUnique => e
     Rails.logger.info "Skipping duplicate player statistics for player #{player.id} in match #{match_id}"
+  end
+
+  def api_service
+    @api_service ||= ApiFootballService.new
   end
 end 

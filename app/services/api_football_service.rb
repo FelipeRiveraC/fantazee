@@ -32,6 +32,12 @@ class ApiFootballService
     JSON.parse(response.body)
   end
 
+  def get_player_details(player: nil, search: nil, page: nil)
+    query = delete_nil_values(player: player, search: search, page: page)
+    response = client.get("/players/profiles", query: query)
+    JSON.parse(response.body)
+  end
+
   private
 
   def delete_nil_values(query)

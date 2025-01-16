@@ -22,8 +22,8 @@ const HomeLayout: React.FC = () => {
                 <Link to="/profile" className="text-base font-medium text-gray-300 hover:text-white transition">
                   Profile
                 </Link>
-                <Link to="/league" className="text-base font-medium text-gray-300 hover:text-white transition">
-                  My League
+                <Link to="/draft" className="text-base font-medium text-gray-300 hover:text-white transition">
+                  Draft
                 </Link>
                 <Link to="/league/new" className="text-base font-medium text-gray-300 hover:text-white transition">
                   Create League

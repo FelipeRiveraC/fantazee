@@ -13,12 +13,15 @@ import CreateTravelForm from 'components/CreateTravelForm';
 import EditTravelForm from 'components/EditTravelForm'; // Importa el componente de edición
 import TravelRequestForm from 'components/TravelRequestForm'; // Importa el formulario de solicitud de viaje
 import TravelShow from 'components/TravelShow';
+import DraftBoard from 'pages/DraftBoard';
 const AppRouter = () => {
   return (
     <Routes>
       <Route path="/" element={<HomeLayout />}>
         {/* Rutas públicas */}
         <Route index element={<HomePage />} />
+
+        <Route path="draft" element={<DraftBoard />} />
 
         {/* Rutas protegidas */}
         <Route element={<ProtectedRoute />}>

@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       resources :players, only: [:index, :show] do
         member do
           get :statistics
+          get :accumulated_statistics
         end
         collection do
           get :search

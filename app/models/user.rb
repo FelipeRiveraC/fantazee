@@ -10,6 +10,14 @@ class User < ApplicationRecord
 
   has_many :draft_teams, dependent: :destroy
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["id", "name", "email", "created_at", "updated_at", "token"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["draft_teams", "travels", "travels_users", "travel_evaluations"]
+  end
+
   def generate_token
     token = Devise.friendly_token
     update!(token: token)

@@ -8,7 +8,11 @@ class Player < ApplicationRecord
   validates :name, presence: true
 
   def self.ransackable_attributes(auth_object = nil)
-    ["id", "name", "position", "team", "status", "created_at", "updated_at", "api_id"]
+    [
+      "id", "api_id", "name", "photo", "firstname", "lastname",
+      "age", "nationality", "height", "weight", "number",
+      "position", "created_at", "updated_at"
+    ]
   end
 
   def self.ransackable_associations(auth_object = nil)

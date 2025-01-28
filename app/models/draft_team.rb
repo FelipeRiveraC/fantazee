@@ -3,6 +3,14 @@ class DraftTeam < ApplicationRecord
   has_many :players_draft_teams, dependent: :destroy
   has_many :players, through: :players_draft_teams
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["id", "name", "league", "user_id", "created_at", "updated_at"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["user", "players_draft_teams", "players"]
+  end
+
   private
 
   def generate_id

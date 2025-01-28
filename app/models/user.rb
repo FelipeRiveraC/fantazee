@@ -27,7 +27,7 @@ class User < ApplicationRecord
   private
 
   def generate_id
-    init_id('usr')
+    self.id = init_id('usr')
   end
 end
 

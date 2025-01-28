@@ -1,7 +1,7 @@
 ActiveAdmin.register User do
   menu priority: 2
 
-  permit_params :email, :name, :status
+  permit_params :email, :name
 
   index do
     selectable_column
@@ -11,9 +11,6 @@ ActiveAdmin.register User do
     column :created_at
     column "Draft Teams" do |user|
       user.draft_teams.count
-    end
-    column "Active Draft Teams" do |user|
-      user.draft_teams.where(status: 'active').count
     end
     actions
   end
@@ -33,7 +30,6 @@ ActiveAdmin.register User do
     panel "User's Draft Teams" do
       table_for user.draft_teams do
         column :name
-        column :status
         column "Players" do |team|
           team.players.count
         end
@@ -51,7 +47,6 @@ ActiveAdmin.register User do
     f.inputs do
       f.input :email
       f.input :name
-      f.input :status, as: :select, collection: ['active', 'inactive', 'suspended']
     end
     f.actions
   end
@@ -60,9 +55,6 @@ ActiveAdmin.register User do
     attributes_table_for user do
       row "Total Draft Teams" do |u|
         u.draft_teams.count
-      end
-      row "Active Teams" do |u|
-        u.draft_teams.where(status: 'active').count
       end
       row "Total Players" do |u|
         u.draft_teams.joins(:players).count

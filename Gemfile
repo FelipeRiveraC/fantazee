@@ -39,7 +39,7 @@ gem "devise"
 gem "httparty"
 
 # Use Sass to process CSS
-# gem "sassc-rails"
+gem "sassc-rails"
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
@@ -67,3 +67,4 @@ end
 
 gem "nio4r", "~> 2.7.0"
 gem "activejob"
+gem 'activeadmin'

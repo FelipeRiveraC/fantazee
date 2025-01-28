@@ -7,6 +7,14 @@ class Player < ApplicationRecord
   validates :api_id, presence: true, uniqueness: true
   validates :name, presence: true
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["id", "name", "position", "team", "status", "created_at", "updated_at", "api_id"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["player_statistics", "matches", "players_draft_teams", "draft_teams"]
+  end
+
   def birth
     {
       date: birth_date&.iso8601,

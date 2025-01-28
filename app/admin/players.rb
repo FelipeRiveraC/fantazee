@@ -17,7 +17,7 @@ ActiveAdmin.register Player do
   filter :name
   filter :firstname
   filter :lastname
-  filter :position
+  filter :position, as: :select, collection: Player::POSITIONS
   filter :nationality
   filter :created_at
 
@@ -28,7 +28,7 @@ ActiveAdmin.register Player do
       f.input :photo
       f.input :firstname
       f.input :lastname
-      f.input :position
+      f.input :position, as: :select, collection: Player::POSITIONS
       f.input :number
     end
     f.actions

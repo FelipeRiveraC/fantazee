@@ -6,6 +6,9 @@ class Player < ApplicationRecord
 
   validates :api_id, presence: true, uniqueness: true
   validates :name, presence: true
+  validates :position, inclusion: { in: %w[Defender Midfielder Attacker], message: "%{value} is not a valid position" }, allow_nil: true
+
+  POSITIONS = %w[Defender Midfielder Attacker].freeze
 
   def self.ransackable_attributes(auth_object = nil)
     [
@@ -36,7 +39,7 @@ class Player < ApplicationRecord
   private
 
   def generate_id
-    init_id('pla')
+    self.id = init_id('pla')
   end
 end
 

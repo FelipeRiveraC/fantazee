@@ -19,7 +19,7 @@ class PlayerStatistic < ApplicationRecord
   private
 
   def generate_id
-    init_id('pst')
+    self.id = init_id('pst')
   end
 end
 

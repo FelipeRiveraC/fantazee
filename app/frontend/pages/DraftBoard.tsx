@@ -4,40 +4,26 @@ import type { Player } from '../types/players';
 import { usePlayers } from '../hooks/usePlayers';
 import { usePlayerSearch } from '../hooks/usePlayerSearch';
 import { useAccumulatedStatistics } from '../hooks/useAccumulatedStatistics';
-
-interface FormationPosition {
-  id: number;
-  label: 'GK' | 'DF' | 'MF' | 'FW';
-  playerId: string | null;
-  top: string;
-  left: string;
-}
-
-const initialFormation: FormationPosition[] = [
-  // GK
-  { id: 1, label: 'GK', playerId: null, top: '50%', left: '10%' },
-  // Defensas (4)
-  { id: 2, label: 'DF', playerId: null, top: '20%', left: '25%' },
-  { id: 3, label: 'DF', playerId: null, top: '40%', left: '25%' },
-  { id: 4, label: 'DF', playerId: null, top: '60%', left: '25%' },
-  { id: 5, label: 'DF', playerId: null, top: '80%', left: '25%' },
-  // Mediocampistas (3)
-  { id: 6, label: 'MF', playerId: null, top: '35%', left: '45%' },
-  { id: 7, label: 'MF', playerId: null, top: '50%', left: '45%' },
-  { id: 8, label: 'MF', playerId: null, top: '65%', left: '45%' },
-  // Delanteros (3)
-  { id: 9, label: 'FW', playerId: null, top: '30%', left: '65%' },
-  { id: 10, label: 'FW', playerId: null, top: '50%', left: '65%' },
-  { id: 11, label: 'FW', playerId: null, top: '70%', left: '65%' },
-];
+import { useCreateDraftTeam } from '../hooks/useDraftTeams';
+import { 
+  Formation, 
+  FormationPosition, 
+  FORMATIONS, 
+  POSITION_MAP 
+} from '../types/formations';
 
 const DraftBoard: React.FC = () => {
-  const [formation, setFormation] = useState<FormationPosition[]>(initialFormation);
+  const [selectedFormation, setSelectedFormation] = useState<Formation>('3-4-3');
+  const [formation, setFormation] = useState<FormationPosition[]>(FORMATIONS['3-4-3'].positions);
   const [searchTerm, setSearchTerm] = useState('');
+  const [draftName, setDraftName] = useState('');
+  const [league, setLeague] = useState('');
   
   // Use our custom hooks
   const { players: initialPlayers = [], loading: initialLoading, error: initialError } = usePlayers();
   const { players: searchedPlayers = [], loading: searchLoading, error: searchError } = usePlayerSearch(searchTerm);
+
+  const createDraftTeam = useCreateDraftTeam();
 
   // Combine the players based on search term
   const players = searchTerm ? searchedPlayers : initialPlayers;
@@ -53,22 +39,51 @@ const DraftBoard: React.FC = () => {
   const isPlayerDrafted = (playerId: string) =>
     formation.some((pos) => pos.playerId === playerId);
 
-  // Draftear: Asignar jugador a la primera posición vacía de su rol
+  const handleFormationChange = (newFormation: Formation) => {
+    setSelectedFormation(newFormation);
+    setFormation(FORMATIONS[newFormation].positions);
+  };
+
+  const validateFormation = (playerId: string, playerPosition: string) => {
+    const formationConfig = FORMATIONS[selectedFormation];
+    const currentPlayers = formation.filter(pos => pos.playerId !== null);
+    
+    // Special case for goalkeeper
+    if (playerPosition === 'Goalkeeper') {
+      const hasGoalkeeper = currentPlayers.some(p => p.label === 'GK');
+      return !hasGoalkeeper; // Allow only one goalkeeper
+    }
+
+    const formationLabel = POSITION_MAP[playerPosition];
+    const currentPositionCount = currentPlayers.filter(p => 
+      p.label === formationLabel
+    ).length;
+
+    const maxForPosition = {
+      'DF': formationConfig.defenders,
+      'MF': formationConfig.midfielders,
+      'FW': formationConfig.attackers
+    }[formationLabel];
+
+    return currentPositionCount < maxForPosition;
+  };
+
   const handleDraftPlayer = (playerId: string, playerPosition: string) => {
     if (isPlayerDrafted(playerId)) {
       alert('Este jugador ya está en tu formación.');
       return;
     }
     
-    // Convert API position to formation position
-    const positionMap: { [key: string]: 'GK' | 'DF' | 'MF' | 'FW' } = {
-      'Goalkeeper': 'GK',
-      'Defender': 'DF',
-      'Midfielder': 'MF',
-      'Attacker': 'FW'
-    };
+    const formationPosition = POSITION_MAP[playerPosition];
     
-    const formationPosition = positionMap[playerPosition];
+    if (!validateFormation(playerId, playerPosition)) {
+      if (playerPosition === 'Goalkeeper') {
+        alert('Ya tienes un portero en tu formación.');
+      } else {
+        alert(`Ya tienes el máximo de jugadores permitidos para esta posición en la formación ${selectedFormation}`);
+      }
+      return;
+    }
     
     const positionIndex = formation.findIndex(
       (pos) => pos.label === formationPosition && pos.playerId === null
@@ -88,9 +103,51 @@ const DraftBoard: React.FC = () => {
   const getPlayerById = (playerId: string | null) =>
     players.find((p) => p.id === playerId);
 
+  const handleSaveDraft = async () => {
+    if (!draftName || !league) {
+      alert('Por favor ingresa un nombre y liga para tu equipo');
+      return;
+    }
+
+    const playerIds = formation
+      .filter(pos => pos.playerId !== null)
+      .map(pos => pos.playerId as string);
+
+    if (playerIds.length === 0) {
+      alert('Debes seleccionar al menos un jugador para tu equipo');
+      return;
+    }
+
+    try {
+      await createDraftTeam.mutateAsync({
+        name: draftName,
+        league,
+        players: playerIds
+      });
+      setDraftName('');
+      setLeague('');
+      setFormation(FORMATIONS['3-4-3'].positions);
+      alert('Equipo creado exitosamente!');
+    } catch (error) {
+      alert('Error al crear el equipo');
+    }
+  };
+
   return (
     <div className="bg-gray-900 text-white min-h-screen p-4">
       <div className="flex gap-4 h-[calc(100vh-2rem)]">
+        {/* Formation Selector */}
+        <div className="mb-4">
+          <select
+            value={selectedFormation}
+            onChange={(e) => handleFormationChange(e.target.value as Formation)}
+            className="w-full p-2 rounded bg-gray-800 text-white"
+          >
+            <option value="3-4-3">3-4-3</option>
+            <option value="4-4-2">4-4-2</option>
+          </select>
+        </div>
+
         {/* Soccer Field */}
         <div className="w-2/3 relative bg-green-800 rounded-lg aspect-[4/3] border-2 border-white/20">
           {/* Field Lines */}
@@ -152,6 +209,30 @@ const DraftBoard: React.FC = () => {
               </div>
             );
           })}
+        </div>
+        
+        {/* Draft Team Form */}
+        <div className="mt-4 bg-gray-800 p-4 rounded-lg">
+          <input
+            type="text"
+            placeholder="Nombre del Equipo"
+            className="w-full p-2 mb-2 rounded bg-gray-700 text-white"
+            value={draftName}
+            onChange={(e) => setDraftName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Liga"
+            className="w-full p-2 mb-2 rounded bg-gray-700 text-white"
+            value={league}
+            onChange={(e) => setLeague(e.target.value)}
+          />
+          <button
+            onClick={handleSaveDraft}
+            className="w-full bg-purple-600 text-white p-2 rounded hover:bg-purple-700 transition-colors"
+          >
+            Guardar Equipo
+          </button>
         </div>
 
         {/* Player List */}

@@ -4,10 +4,12 @@ class PlayersDraftTeam < ApplicationRecord
 
   validates :player_id, uniqueness: { scope: :draft_team_id }
 
+  before_create :generate_id
+
   private
 
   def generate_id
-    init_id('pdt')
+    self.id = init_id('pdt')
   end
 end
 

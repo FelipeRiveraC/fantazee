@@ -33,6 +33,12 @@ Rails.application.routes.draw do
           get :search
         end
       end
+      resources :draft_teams do
+        member do
+          post 'add_player'
+          delete 'remove_player/:player_id', action: :remove_player, as: :remove_player
+        end
+      end
     end
   end
 

@@ -14,6 +14,7 @@ import EditTravelForm from 'components/EditTravelForm'; // Importa el componente
 import TravelRequestForm from 'components/TravelRequestForm'; // Importa el formulario de solicitud de viaje
 import TravelShow from 'components/TravelShow';
 import DraftBoard from 'pages/DraftBoard';
+import { DraftTeams } from 'pages/DraftTeams';
 const AppRouter = () => {
   return (
     <Routes>
@@ -22,7 +23,7 @@ const AppRouter = () => {
         <Route index element={<HomePage />} />
 
         <Route path="draft" element={<DraftBoard />} />
-
+        <Route path="draft/teams" element={<DraftTeams />} />
         {/* Rutas protegidas */}
         <Route element={<ProtectedRoute />}>
           <Route path="engagements/:id/edit" element={<EngagementShow />} />

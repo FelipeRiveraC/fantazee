@@ -84,3 +84,142 @@ Rails application using typescript, react, built using [Vite](https://vitejs.dev
 - Run the rails specs
 
   `bundle exec rspec`
+
+## Docker
+
+## Docker
+
+### Prerequisites
+
+-------------------
+
+- Docker
+- Docker Compose
+- Make (optional)
+
+### Installation
+
+-------------
+
+1. Clone the repository:
+
+   ```bash
+   git clone git@github.com:your-username/draft-team-builder.git
+   cd draft-team-builder
+   ```
+
+2. Build containers:
+
+   ```bash
+   make setup
+   ```
+
+   Alternative without Make:
+
+   ```bash
+   docker-compose build
+   docker-compose run --rm app bundle install
+   docker-compose run --rm app yarn install
+   docker-compose run --rm app rails db:setup
+   ```
+
+### Starting the Application
+
+-----------------------
+
+1. Start all services:
+
+   ```bash
+   make start
+   ```
+
+   Alternative without Make:
+
+   ```bash
+   docker-compose up
+   ```
+
+2. The application will be available at:
+   - Frontend: <http://localhost:5173>
+   - API: <http://localhost:3000>
+
+### Useful Commands
+
+----------------
+
+- Access Rails console:
+
+  ```bash
+  make console
+  # or: docker-compose run --rm app rails console
+  ```
+
+- Access container bash:
+
+  ```bash
+  make bash
+  # or: docker-compose run --rm app bash
+  ```
+
+- View logs:
+
+  ```bash
+  make logs
+  # or: docker-compose logs -f
+  ```
+
+- Stop application:
+
+  ```bash
+  make stop
+  # or: docker-compose down
+  ```
+
+### Troubleshooting
+
+1. If changes are not reflected:
+   - Verify containers are running:
+
+     ```bash
+     docker-compose ps
+     ```
+
+   - Restart services:
+
+     ```bash
+     make stop && make start
+     ```
+
+2. Database issues:
+   - Reset database:
+
+     ```bash
+     make bash
+     rails db:reset
+     ```
+
+3. Dependency issues:
+   - Rebuild containers:
+
+     ```bash
+     make clean
+     make setup
+     ```
+
+### Development
+
+- Code changes are reflected automatically
+- Frontend code is in `app/frontend`
+- API endpoints are in `app/controllers/api`
+- Models are in `app/models`
+
+### Important File Structure
+
+.
+├── app/
+│   ├── frontend/        # Código React/TypeScript
+│   ├── controllers/     # Controladores Rails
+│   └── models/         # Modelos Rails
+├── config/            # Configuración
+├── db/               # Migraciones
+└── docker/          # Archivos Docker

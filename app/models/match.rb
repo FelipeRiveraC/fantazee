@@ -5,7 +5,7 @@ class Match < ApplicationRecord
   private
 
   def generate_id
-    init_id('mat')
+    self.id = init_id('mat')
   end
 end
 

@@ -6,7 +6,7 @@ class Player < ApplicationRecord
 
   validates :api_id, presence: true, uniqueness: true
   validates :name, presence: true
-  validates :position, inclusion: { in: %w[Defender Midfielder Attacker], message: "%{value} is not a valid position" }, allow_nil: true
+  validates :position, inclusion: { in: %w[Defender Midfielder Attacker Goalkeeper], message: "%{value} is not a valid position" }, allow_nil: true
 
   POSITIONS = %w[Defender Midfielder Attacker].freeze
 

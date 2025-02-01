@@ -38,6 +38,9 @@ Rails.application.routes.draw do
           post 'add_player'
           delete 'remove_player/:player_id', action: :remove_player, as: :remove_player
         end
+        collection do
+          get :my_teams
+        end
       end
     end
   end

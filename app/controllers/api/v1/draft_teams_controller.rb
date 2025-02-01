@@ -65,6 +65,15 @@ class Api::V1::DraftTeamsController < Api::V1::BaseController
     render json: { error: 'Player not found in team' }, status: :not_found
   end
 
+  def my_teams
+    @draft_teams = current_user.draft_teams.includes(:players)
+    render json: @draft_teams, include: [
+      players: {
+        only: [:id, :name, :position, :photo]
+      }
+    ]
+  end
+
   private
 
   def set_draft_team

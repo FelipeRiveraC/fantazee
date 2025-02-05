@@ -57,10 +57,6 @@ const Profile: React.FC = () => {
         </div>
 
         <div className="border-t border-gray-300 my-4"></div>
-
-        <div>
-          <h2 className="text-lg font-semibold text-gray-800">Travel Evaluations:</h2>
-        </div>
       </div>
     </div>
   );

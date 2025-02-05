@@ -11,6 +11,9 @@ import {
   POSITION_MAP 
 } from '../types/formations';
 import FormationPreview from '../components/FormationPreview';
+import { FormationModal } from '../components/FormationModal';
+import { TeamDetailsModal } from '../components/TeamDetailsModal';
+import { TeamVisualization } from '../components/TeamVisualization';
 
 const DraftBoard: React.FC = () => {
   const [selectedFormation, setSelectedFormation] = useState<Formation>('3-4-3');
@@ -20,6 +23,7 @@ const DraftBoard: React.FC = () => {
   const [showFormationModal, setShowFormationModal] = useState(false);
   const [draftName, setDraftName] = useState('');
   const [league, setLeague] = useState('');
+  const [selectedPosition, setSelectedPosition] = useState<'All' | 'Goalkeeper' | 'Defender' | 'Midfielder' | 'Attacker'>('All');
 
   // Use our custom hooks
   const { players: initialPlayers = [], loading: initialLoading, error: initialError } = usePlayers();
@@ -32,10 +36,12 @@ const DraftBoard: React.FC = () => {
   const loading = initialLoading || searchLoading;
   const error = searchError || initialError;
 
-  // Filter players by name (this is now done client-side for better UX)
-  const filteredPlayers = players?.filter((player) =>
-    player.name.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  // Updated filter to include position filtering
+  const filteredPlayers = players?.filter((player) => {
+    const matchesSearch = player.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesPosition = selectedPosition === 'All' || player.position === selectedPosition;
+    return matchesSearch && matchesPosition;
+  }) || [];
 
   // Saber si un jugador ya está drafteado
   const isPlayerDrafted = (playerId: string) =>
@@ -132,9 +138,15 @@ const DraftBoard: React.FC = () => {
         league,
         players: playerIds
       });
+      
+      // Clear the form and formation
       setDraftName('');
       setLeague('');
-      setFormation(FORMATIONS['3-4-3'].positions);
+      setFormation(FORMATIONS[selectedFormation].positions.map(pos => ({
+        ...pos,
+        playerId: null
+      })));
+      setShowTeamDetailsModal(false);
       alert('Equipo creado exitosamente!');
     } catch (error) {
       alert('Error al crear el equipo');
@@ -150,93 +162,66 @@ const DraftBoard: React.FC = () => {
     setShowTeamDetailsModal(true);
   };
 
-  return (
-    <div className="bg-gray-900 text-white min-h-screen p-4">
-      <div className="flex gap-4 h-[calc(100vh-2rem)]">
-        {/* Left side with field and controls */}
-        <div className="w-2/3 flex flex-col">
-          {/* Top controls */}
-          <div className="flex items-center justify-between mb-4">
-            <button
-              onClick={() => setShowFormationModal(true)}
-              className="px-4 py-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              Formation: {selectedFormation}
-            </button>
+  const handleClearFormation = () => {
+    if (confirm('¿Estás seguro de que quieres limpiar la formación actual?')) {
+      // Reset to empty formation with the same structure
+      const emptyFormation = FORMATIONS[selectedFormation].positions.map(pos => ({
+        ...pos,
+        playerId: null
+      }));
+      setFormation(emptyFormation);
+    }
+  };
 
+  const handleRemovePlayer = (playerId: string) => {
+    const updatedFormation = formation.map(pos => ({
+      ...pos,
+      playerId: pos.playerId === playerId ? null : pos.playerId
+    }));
+    setFormation(updatedFormation);
+  };
+
+  return (
+    <div className="flex min-h-screen bg-gray-900 text-white p-4 md:p-6">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full">
+        {/* Left side with formation */}
+        <div className="w-full md:w-2/3">
+          <div className="flex justify-between mb-4">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowFormationModal(true)}
+                className="bg-purple-600 px-4 py-2 rounded hover:bg-purple-700"
+              >
+                Formation: {selectedFormation}
+              </button>
+              <button
+                onClick={handleClearFormation}
+                className="bg-red-600 px-4 py-2 rounded hover:bg-red-700"
+              >
+                Clear Formation
+              </button>
+            </div>
             <button
               onClick={handleFormationComplete}
-              className="px-6 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition-colors"
+              className="bg-green-600 px-4 py-2 rounded hover:bg-green-700"
             >
-              Mi Formación está Lista
+              Complete Team
             </button>
           </div>
-
-          {/* Soccer Field */}
-          <div className="relative bg-green-800 rounded-lg aspect-[4/3] border-2 border-white/20">
-            {/* Field Lines */}
-            <div className="absolute inset-0">
-              {/* Center Circle */}
-              <div className="absolute top-1/2 left-1/2 w-24 h-24 border-2 border-white/20 rounded-full transform -translate-x-1/2 -translate-y-1/2" />
-              {/* Center Line */}
-              <div className="absolute top-0 bottom-0 left-1/2 w-0 border-l-2 border-white/20 transform -translate-x-1/2" />
-              {/* Penalty Areas */}
-              <div className="absolute top-1/4 left-0 w-1/6 h-1/2 border-2 border-l-0 border-white/20" />
-              <div className="absolute top-1/4 right-0 w-1/6 h-1/2 border-2 border-r-0 border-white/20" />
-              {/* Goal Areas */}
-              <div className="absolute top-[35%] left-0 w-[8%] h-[30%] border-2 border-l-0 border-white/20" />
-              <div className="absolute top-[35%] right-0 w-[8%] h-[30%] border-2 border-r-0 border-white/20" />
-            </div>
-
-            {/* Player Positions */}
-            {formation.map((pos) => {
-              const player = pos.playerId ? getPlayerById(pos.playerId) : null;
-              return (
-                <div
-                  key={pos.id}
-                  className="absolute transform -translate-x-1/2 -translate-y-1/2"
-                  style={{ top: pos.top, left: pos.left }}
-                >
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center relative
-                               ${player ? 'bg-purple-600' : 'bg-gray-800'}`}>
-                    {player ? (
-                      <>
-                        <img
-                          src={player.photo}
-                          alt={player.name}
-                          className="w-10 h-10 rounded-full"
-                        />
-                        <button
-                          onClick={() => {
-                            const updatedFormation = formation.map(p => 
-                              p.id === pos.id ? { ...p, playerId: null } : p
-                            );
-                            setFormation(updatedFormation);
-                          }}
-                          className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-red-500 
-                                   text-white text-xs flex items-center justify-center
-                                   hover:bg-red-600 transition-colors"
-                        >
-                          ×
-                        </button>
-                      </>
-                    ) : (
-                      <span className="text-white font-bold">{pos.label}</span>
-                    )}
-                  </div>
-                  {player && (
-                    <div className="absolute top-full mt-1 left-1/2 transform -translate-x-1/2 
-                                 text-xs text-white text-center whitespace-nowrap">
-                      {player.name}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+          
+          <div className="bg-gray-800 rounded-lg p-4 aspect-[4/3] md:aspect-[3/2]">
+            <TeamVisualization
+              players={formation
+                .filter(pos => pos.playerId !== null)
+                .map(pos => getPlayerById(pos.playerId)!)
+              }
+              formation={selectedFormation}
+              onRemovePlayer={handleRemovePlayer}
+            />
           </div>
         </div>
 
-        {/* Right side with player list */}
+        {/* Right side with player search and list */}
         <div className="w-1/3 flex flex-col">
           <input
             type="text"
@@ -246,125 +231,36 @@ const DraftBoard: React.FC = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
-          {loading ? (
-            <div className="text-center py-4">
-              <p>Loading players...</p>
-            </div>
-          ) : error ? (
-            <div className="text-center py-4 text-red-500">
-              <p>{error}</p>
-            </div>
-          ) : (
-            <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-              {filteredPlayers.map((player) => {
-                const drafted = isPlayerDrafted(player.id);
-                return (
-                  <div
-                    key={player.id}
-                    className="bg-gray-800 rounded-lg p-4 flex flex-col gap-2 
-                             hover:bg-gray-700 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-semibold">{player.name}</p>
-                        <p className="text-gray-400 text-sm">
-                          {player.position} - {player.team}
-                        </p>
-                      </div>
-                      
-                      {drafted ? (
-                        <button
-                          className="px-4 py-2 bg-gray-500 text-white rounded-lg 
-                                    text-sm font-semibold cursor-not-allowed"
-                          title="Jugador ya drafteado"
-                          disabled
-                        >
-                          ✅
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleDraftPlayer(player.id, player.position)}
-                          className="px-4 py-2 bg-purple-600 hover:bg-purple-700
-                                    text-white rounded-lg text-sm font-semibold
-                                    transition-colors"
-                        >
-                          Draftear
-                        </button>
-                      )}
-                    </div>
+          <PlayerFilter
+            selectedPosition={selectedPosition}
+            onPositionChange={setSelectedPosition}
+          />
 
-                    {/* Player Statistics */}
-                    {!drafted && (
-                      <AccumulatedStats playerId={player.id} />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <PlayerList
+            players={filteredPlayers}
+            isPlayerDrafted={isPlayerDrafted}
+            onDraftPlayer={handleDraftPlayer}
+            loading={loading}
+            error={error}
+          />
         </div>
 
-        {/* Formation Modal */}
-        {showFormationModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-gray-800 p-6 rounded-lg">
-              <h2 className="text-xl font-bold mb-4">Select Formation</h2>
-              <div className="flex gap-4">
-                {(Object.keys(FORMATIONS) as Formation[]).map((formationType) => (
-                  <FormationPreview
-                    key={formationType}
-                    formation={formationType}
-                    isSelected={selectedFormation === formationType}
-                    onSelect={handleFormationChange}
-                  />
-                ))}
-              </div>
-              <button
-                onClick={() => setShowFormationModal(false)}
-                className="mt-4 w-full bg-gray-600 text-white p-2 rounded hover:bg-gray-700"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
+        <FormationModal
+          isOpen={showFormationModal}
+          onClose={() => setShowFormationModal(false)}
+          selectedFormation={selectedFormation}
+          onFormationChange={handleFormationChange}
+        />
 
-        {/* Team Details Modal */}
-        {showTeamDetailsModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-gray-800 p-6 rounded-lg w-96">
-              <h2 className="text-xl font-bold mb-4">Completa los Detalles del Equipo</h2>
-              <input
-                type="text"
-                placeholder="Nombre del Equipo"
-                className="w-full p-3 mb-4 rounded bg-gray-700 text-white"
-                value={draftName}
-                onChange={(e) => setDraftName(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Liga"
-                className="w-full p-3 mb-4 rounded bg-gray-700 text-white"
-                value={league}
-                onChange={(e) => setLeague(e.target.value)}
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={handleSaveDraft}
-                  className="flex-1 bg-purple-600 text-white p-3 rounded font-bold hover:bg-purple-700 transition-colors"
-                >
-                  Guardar Equipo
-                </button>
-                <button
-                  onClick={() => setShowTeamDetailsModal(false)}
-                  className="flex-1 bg-gray-600 text-white p-3 rounded font-bold hover:bg-gray-700 transition-colors"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <TeamDetailsModal
+          isOpen={showTeamDetailsModal}
+          onClose={() => setShowTeamDetailsModal(false)}
+          draftName={draftName}
+          league={league}
+          onDraftNameChange={setDraftName}
+          onLeagueChange={setLeague}
+          onSave={handleSaveDraft}
+        />
       </div>
     </div>
   );
@@ -393,6 +289,79 @@ const AccumulatedStats: React.FC<{ playerId: string }> = ({ playerId }) => {
           <p>Tarjetas: {stats.yellow_cards}A/{stats.red_cards}R</p>
         </>
       )}
+    </div>
+  );
+};
+
+const PlayerFilter: React.FC<{ selectedPosition: string; onPositionChange: (position: string) => void }> = ({ selectedPosition, onPositionChange }) => {
+  return (
+    <div className="flex items-center justify-between mb-4">
+      <span className="text-gray-400">Filter by position:</span>
+      <select
+        value={selectedPosition}
+        onChange={(e) => onPositionChange(e.target.value)}
+        className="bg-gray-800 text-white p-2 rounded"
+      >
+        <option value="All">All</option>
+        <option value="Goalkeeper">Goalkeeper</option>
+        <option value="Defender">Defender</option>
+        <option value="Midfielder">Midfielder</option>
+        <option value="Attacker">Attacker</option>
+      </select>
+    </div>
+  );
+};
+
+const PlayerList: React.FC<{ players: Player[]; isPlayerDrafted: (playerId: string) => boolean; onDraftPlayer: (playerId: string, playerPosition: string) => void; loading: boolean; error: string | null }> = ({ players, isPlayerDrafted, onDraftPlayer, loading, error }) => {
+  if (loading) return <div className="text-center py-4">Loading players...</div>;
+  if (error) return <div className="text-center py-4 text-red-500">{error}</div>;
+
+  return (
+    <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+      {players.map((player) => {
+        const drafted = isPlayerDrafted(player.id);
+        return (
+          <div
+            key={player.id}
+            className="bg-gray-800 rounded-lg p-4 flex flex-col gap-2 
+                     hover:bg-gray-700 transition-colors"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold">{player.name}</p>
+                <p className="text-gray-400 text-sm">
+                  {player.position} - {player.team}
+                </p>
+              </div>
+              
+              {drafted ? (
+                <button
+                  className="px-4 py-2 bg-gray-500 text-white rounded-lg 
+                            text-sm font-semibold cursor-not-allowed"
+                  title="Jugador ya drafteado"
+                  disabled
+                >
+                  ✅
+                </button>
+              ) : (
+                <button
+                  onClick={() => onDraftPlayer(player.id, player.position)}
+                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700
+                            text-white rounded-lg text-sm font-semibold
+                            transition-colors"
+                >
+                  Draftear
+                </button>
+              )}
+            </div>
+
+            {/* Player Statistics */}
+            {!drafted && (
+              <AccumulatedStats playerId={player.id} />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };

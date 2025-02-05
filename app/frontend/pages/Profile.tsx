@@ -60,20 +60,6 @@ const Profile: React.FC = () => {
 
         <div>
           <h2 className="text-lg font-semibold text-gray-800">Travel Evaluations:</h2>
-          {userData?.travel_evaluations.length ? (
-            <ul className="mt-4 space-y-4">
-              {userData.travel_evaluations.map((evaluation) => (
-                <li key={evaluation.id} className="p-4 bg-gray-100 rounded-lg shadow-sm">
-                  <p className="text-gray-800"><strong>Travel:</strong> {evaluation.travel_id}</p>
-                  <p className="text-gray-600"><strong>Rating:</strong> {evaluation.rating} ⭐</p>
-                  <p className="text-gray-600"><strong>Comment:</strong> {evaluation.comment}</p>
-                  <p className="text-gray-500 text-sm"><strong>Evaluated On:</strong> {new Date(evaluation.created_at).toLocaleString()}</p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-600 mt-4">No travel evaluations found.</p>
-          )}
         </div>
       </div>
     </div>

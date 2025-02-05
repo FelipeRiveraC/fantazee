@@ -22,18 +22,11 @@ const AppRouter = () => {
       <Route path="/" element={<HomeLayout />}>
         {/* Rutas públicas */}
         <Route index element={<HomePage />} />
-
-        <Route path="draft" element={<DraftBoard />} />
-        <Route path="draft/teams" element={<MyDraftTeams />} />
         {/* Rutas protegidas */}
         <Route element={<ProtectedRoute />}>
-          <Route path="engagements/:id/edit" element={<EngagementShow />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="travels" element={<TravelsList />} />
-          <Route path="travels/new" element={<CreateTravelForm />} />
-          <Route path="travels/:id/edit" element={<EditTravelForm />} /> {/* Nueva ruta de edición */}
-          <Route path="travels/:id/request" element={<TravelRequestForm />} /> {/* Ruta para crear solicitud */}
-          <Route path="travels/:id" element={<TravelShow />} /> {/* Ruta para mostrar el viaje */}
+          <Route path="draft" element={<DraftBoard />} />
+          <Route path="draft/teams" element={<MyDraftTeams />} />
         </Route>
 
         {/* Rutas para usuarios no autenticados */}

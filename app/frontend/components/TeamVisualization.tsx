@@ -40,7 +40,7 @@ export const TeamVisualization: React.FC<TeamVisualizationProps> = ({
   });
 
   return (
-    <div className="relative w-full h-full bg-green-800 rounded-lg overflow-hidden">
+    <div className="absolute inset-0 bg-green-800 rounded-lg overflow-hidden">
       {/* Field markings */}
       <div className="absolute inset-0">
         {/* Outer border */}
@@ -70,10 +70,10 @@ export const TeamVisualization: React.FC<TeamVisualizationProps> = ({
         <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 w-2 h-2 bg-white opacity-50 rounded-full" />
       </div>
 
-      {/* Players */}
+      {/* Players grid */}
       <div className="absolute inset-0 grid grid-rows-4">
         {/* Attackers */}
-        <div className="relative flex items-center justify-around px-8">
+        <div className="relative flex items-center justify-around px-12">
           {positionedPlayers
             .filter(pos => pos.label === 'FW')
             .map((position, idx) => (
@@ -86,7 +86,7 @@ export const TeamVisualization: React.FC<TeamVisualizationProps> = ({
         </div>
 
         {/* Midfielders */}
-        <div className="relative flex items-center justify-around px-8">
+        <div className="relative flex items-center justify-around px-12">
           {positionedPlayers
             .filter(pos => pos.label === 'MF')
             .map((position, idx) => (
@@ -99,7 +99,7 @@ export const TeamVisualization: React.FC<TeamVisualizationProps> = ({
         </div>
 
         {/* Defenders */}
-        <div className="relative flex items-center justify-around px-8">
+        <div className="relative flex items-center justify-around px-12">
           {positionedPlayers
             .filter(pos => pos.label === 'DF')
             .map((position, idx) => (

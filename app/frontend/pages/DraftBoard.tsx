@@ -209,20 +209,22 @@ const DraftBoard: React.FC = () => {
             </button>
           </div>
           
-          <div className="bg-gray-800 rounded-lg p-4 aspect-[4/3] md:aspect-[3/2]">
-            <TeamVisualization
-              players={formation
-                .filter(pos => pos.playerId !== null)
-                .map(pos => getPlayerById(pos.playerId)!)
-              }
-              formation={selectedFormation}
-              onRemovePlayer={handleRemovePlayer}
-            />
+          <div className="bg-gray-800 rounded-lg p-4">
+            <div className="aspect-[4/3] md:aspect-[3/2] relative">
+              <TeamVisualization
+                players={formation
+                  .filter(pos => pos.playerId !== null)
+                  .map(pos => getPlayerById(pos.playerId)!)
+                }
+                formation={selectedFormation}
+                onRemovePlayer={handleRemovePlayer}
+              />
+            </div>
           </div>
         </div>
 
         {/* Right side with player search and list */}
-        <div className="w-1/3 flex flex-col">
+        <div className="w-full md:w-1/3 flex flex-col h-full">
           <input
             type="text"
             placeholder="Buscar jugador..."
@@ -236,13 +238,17 @@ const DraftBoard: React.FC = () => {
             onPositionChange={setSelectedPosition}
           />
 
-          <PlayerList
-            players={filteredPlayers}
-            isPlayerDrafted={isPlayerDrafted}
-            onDraftPlayer={handleDraftPlayer}
-            loading={loading}
-            error={error}
-          />
+          <div className="bg-gray-800 rounded-lg overflow-hidden">
+            <div className="h-[calc(100vh-16rem)] overflow-y-auto">
+              <PlayerList
+                players={filteredPlayers}
+                isPlayerDrafted={isPlayerDrafted}
+                onDraftPlayer={handleDraftPlayer}
+                loading={loading}
+                error={error}
+              />
+            </div>
+          </div>
         </div>
 
         <FormationModal
@@ -312,19 +318,25 @@ const PlayerFilter: React.FC<{ selectedPosition: string; onPositionChange: (posi
   );
 };
 
-const PlayerList: React.FC<{ players: Player[]; isPlayerDrafted: (playerId: string) => boolean; onDraftPlayer: (playerId: string, playerPosition: string) => void; loading: boolean; error: string | null }> = ({ players, isPlayerDrafted, onDraftPlayer, loading, error }) => {
+const PlayerList: React.FC<{ 
+  players: Player[]; 
+  isPlayerDrafted: (playerId: string) => boolean; 
+  onDraftPlayer: (playerId: string, playerPosition: string) => void; 
+  loading: boolean; 
+  error: string | null 
+}> = ({ players, isPlayerDrafted, onDraftPlayer, loading, error }) => {
   if (loading) return <div className="text-center py-4">Loading players...</div>;
   if (error) return <div className="text-center py-4 text-red-500">{error}</div>;
 
   return (
-    <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+    <div className="space-y-4 p-4">
       {players.map((player) => {
         const drafted = isPlayerDrafted(player.id);
         return (
           <div
             key={player.id}
-            className="bg-gray-800 rounded-lg p-4 flex flex-col gap-2 
-                     hover:bg-gray-700 transition-colors"
+            className="bg-gray-700 rounded-lg p-4 flex flex-col gap-2 
+                     hover:bg-gray-600 transition-colors"
           >
             <div className="flex items-center justify-between">
               <div>

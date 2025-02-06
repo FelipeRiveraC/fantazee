@@ -37,7 +37,6 @@ class Api::V1::UsersController < Api::V1::BaseController
       name: user.name,
       email: user.email,
       created_at: user.created_at,
-      travel_evaluations: user.travel_evaluations,
     }
   end
 

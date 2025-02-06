@@ -26,13 +26,6 @@ export const DraftTeamsList: React.FC = () => {
               </div>
             </div>
 
-            <div className="h-[400px] relative mb-4">
-              <TeamVisualization
-                players={team.players}
-                formation={team.formation as Formation}
-              />
-            </div>
-
             <button
               onClick={() => {
                 setSelectedTeam(team);

@@ -3,18 +3,13 @@ import HomeLayout from 'layouts/HomeLayout';
 import { Navigate, Route, Routes } from 'react-router';
 import HomePage from 'pages/HomePage';
 import LoginForm from 'components/LoginForm';
-import EngagementShow from 'components/EngagementShow';
 import ProtectedRoute from './ProtectedRoute';  // Importamos ProtectedRoute
 import GuestRoute from './GuestRoute';  // Importamos GuestRoute
 import Profile from '../pages/Profile';
 import Register from 'pages/Register';
-import TravelsList from 'components/TravelsList';
-import CreateTravelForm from 'components/CreateTravelForm';
-import EditTravelForm from 'components/EditTravelForm'; // Importa el componente de edición
-import TravelRequestForm from 'components/TravelRequestForm'; // Importa el formulario de solicitud de viaje
-import TravelShow from 'components/TravelShow';
 import DraftBoard from 'pages/DraftBoard';
 import { MyDraftTeams } from 'pages/MyDraftTeams';
+import Head2Head from 'pages/Head2Head';
 
 const AppRouter = () => {
   return (
@@ -27,6 +22,7 @@ const AppRouter = () => {
           <Route path="profile" element={<Profile />} />
           <Route path="draft" element={<DraftBoard />} />
           <Route path="draft/teams" element={<MyDraftTeams />} />
+          <Route path="head2head" element={<Head2Head />} />
         </Route>
 
         {/* Rutas para usuarios no autenticados */}

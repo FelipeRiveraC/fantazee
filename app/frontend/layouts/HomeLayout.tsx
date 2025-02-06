@@ -31,6 +31,9 @@ const HomeLayout: React.FC = () => {
                 <Link to="/draft/teams" className="text-base font-medium text-gray-300 hover:text-white transition">
                   My Draft Teams
                 </Link>
+                <Link to="/head2head" className="text-base font-medium text-gray-300 hover:text-white transition">
+                  Head2Head
+                </Link>
                 <button
                   onClick={logout}
                   className="text-base font-medium text-red-400 hover:text-red-500 transition"

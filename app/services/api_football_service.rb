@@ -25,7 +25,10 @@ class ApiFootballService
     JSON.parse(response.body)
   end
 
-  # ... other API calls ...
+  def get_fixtures_ids(league: nil, live: nil, season: nil, date: nil, team: nil)
+    response = get_fixtures(league: league, live: live, season: season, date: date, team: team)
+    response["response"].map { |fixture| fixture["fixture"]["id"] }
+  end
 
   private
 

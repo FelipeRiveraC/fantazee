@@ -1,5 +1,6 @@
 import React from 'react';
 import { TeamVisualization } from './TeamVisualization';
+import { Formation } from '../types/formations';
 
 interface Player {
   id: string;
@@ -15,6 +16,7 @@ interface TeamViewModalProps {
     id: string;
     name: string;
     league: string;
+    formation: string;
     players: Player[];
   } | null;
 }
@@ -45,12 +47,14 @@ export const TeamViewModal: React.FC<TeamViewModalProps> = ({ isOpen, onClose, t
         <div className="p-4 overflow-y-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Formation View */}
-            <div className="bg-gray-900 rounded-lg p-4">
-              <h3 className="text-lg font-medium text-white mb-4">Formation View</h3>
-              <div className="aspect-[2/3] w-full relative">
+            <div className="bg-gray-900 rounded-lg p-4 h-full">
+              <h3 className="text-lg font-medium text-white mb-4">
+                Formation: {team.formation}
+              </h3>
+              <div className="h-[calc(100vh-15rem)] relative">
                 <TeamVisualization 
                   players={team.players} 
-                  formation={team.formation || '3-4-3'}
+                  formation={team.formation as Formation}
                 />
               </div>
             </div>

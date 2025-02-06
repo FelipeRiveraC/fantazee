@@ -15,7 +15,7 @@ class DraftTeam < ApplicationRecord
   validate :unique_players, if: -> { players.any? }
 
   def self.ransackable_attributes(auth_object = nil)
-    ["id", "name", "league", "user_id", "created_at", "updated_at"]
+    ["id", "name", "league", "user_id","formation", "created_at", "updated_at"]
   end
 
   def self.ransackable_associations(auth_object = nil)
@@ -73,6 +73,7 @@ end
 #  league     :string           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  formation  :string           default("3-4-3")
 #
 # Indexes
 #

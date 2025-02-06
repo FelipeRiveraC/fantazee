@@ -1,11 +1,12 @@
 ActiveAdmin.register DraftTeam do
-  permit_params :name, :league, :user_id
+  permit_params :name, :league, :formation, :user_id
 
   index do
     selectable_column
     id_column
     column :name
     column :league
+    column :formation
     column "Owner" do |team|
       link_to team.user.name, admin_user_path(team.user)
     end
@@ -21,6 +22,7 @@ ActiveAdmin.register DraftTeam do
       row :id
       row :name
       row :league
+      row :formation
       row "Owner" do |team|
         link_to team.user.name, admin_user_path(team.user)
       end
@@ -49,6 +51,7 @@ ActiveAdmin.register DraftTeam do
       f.input :name
       f.input :league
       f.input :user
+      f.input :formation, as: :select, collection: ['3-4-3', '4-4-2'], include_blank: false
     end
     f.actions
   end
@@ -61,6 +64,7 @@ ActiveAdmin.register DraftTeam do
       row "Players by Position" do |team|
         team.players.group(:position).count.map { |pos, count| "#{pos}: #{count}" }.join(", ")
       end
+      row :formation
     end
   end
 end 

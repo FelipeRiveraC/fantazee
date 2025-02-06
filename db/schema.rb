@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_28_163319) do
+ActiveRecord::Schema[7.0].define(version: 2025_02_06_131023) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,7 +50,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_28_163319) do
     t.string "league", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "formation", default: "3-4-3"
     t.index ["user_id"], name: "index_draft_teams_on_user_id"
+    t.check_constraint "formation::text = ANY (ARRAY['3-4-3'::character varying, '4-4-2'::character varying]::text[])", name: "valid_formation_check"
   end
 
   create_table "engagements", force: :cascade do |t|

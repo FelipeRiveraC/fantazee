@@ -11,6 +11,7 @@ export interface FormationPosition {
 }
 
 export interface FormationConfig {
+  goalkeepers: number;
   defenders: number;
   midfielders: number;
   attackers: number;
@@ -19,6 +20,7 @@ export interface FormationConfig {
 
 export const FORMATIONS: Record<Formation, FormationConfig> = {
   '3-4-3': {
+    goalkeepers: 1,
     defenders: 3,
     midfielders: 4,
     attackers: 3,
@@ -41,6 +43,7 @@ export const FORMATIONS: Record<Formation, FormationConfig> = {
     ]
   },
   '4-4-2': {
+    goalkeepers: 1,
     defenders: 4,
     midfielders: 4,
     attackers: 2,

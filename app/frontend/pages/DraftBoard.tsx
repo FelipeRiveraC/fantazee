@@ -74,6 +74,7 @@ const DraftBoard: React.FC = () => {
     ).length;
 
     const maxForPosition = {
+      'GK': formationConfig.goalkeepers,
       'DF': formationConfig.defenders,
       'MF': formationConfig.midfielders,
       'FW': formationConfig.attackers
@@ -113,9 +114,8 @@ const DraftBoard: React.FC = () => {
     setFormation(updatedFormation);
   };
 
-  // Get player by ID helper
-  const getPlayerById = (playerId: string | null) =>
-    players.find((p) => p.id === playerId);
+const getPlayerById = (playerId: string | null) =>
+  initialPlayers.find((p) => p.id === playerId);
 
   const handleSaveDraft = async () => {
     if (!draftName || !league) {
@@ -299,13 +299,20 @@ const AccumulatedStats: React.FC<{ playerId: string }> = ({ playerId }) => {
   );
 };
 
-const PlayerFilter: React.FC<{ selectedPosition: string; onPositionChange: (position: string) => void }> = ({ selectedPosition, onPositionChange }) => {
+interface PlayerFilterProps {
+  selectedPosition: 'All' | 'Goalkeeper' | 'Defender' | 'Midfielder' | 'Attacker';
+  onPositionChange: (position: 'All' | 'Goalkeeper' | 'Defender' | 'Midfielder' | 'Attacker') => void;
+}
+
+const PlayerFilter: React.FC<PlayerFilterProps> = ({ selectedPosition, onPositionChange }) => {
   return (
     <div className="flex items-center justify-between mb-4">
       <span className="text-gray-400">Filter by position:</span>
       <select
         value={selectedPosition}
-        onChange={(e) => onPositionChange(e.target.value)}
+        onChange={(e) =>
+          onPositionChange(e.target.value as 'All' | 'Goalkeeper' | 'Defender' | 'Midfielder' | 'Attacker')
+        }
         className="bg-gray-800 text-white p-2 rounded"
       >
         <option value="All">All</option>

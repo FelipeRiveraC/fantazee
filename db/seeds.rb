@@ -5,6 +5,5 @@ Engagement.find_or_create_by(name: 'Canned Project')
 Engagement.find_or_create_by(name: 'Lean Startup')
 
 if Rails.env.development?
-  AdminUser.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password')
+  AdminUser.find_or_create_by!(email: 'admin@example.com', password: 'password', password_confirmation: 'password')
 end
-AdminUser.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password') if Rails.env.development?

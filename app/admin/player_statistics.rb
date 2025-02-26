@@ -1,6 +1,6 @@
 ActiveAdmin.register PlayerStatistic do
   permit_params :player_id, :match_id, :games_minutes, :games_rating, :goals_total, 
-                :goals_assists, :goals_saves, :passes_total, :passes_accuracy
+                :goals_assists, :goals_saves, :passes_total, :passes_accuracy, :live
 
   index do
     selectable_column
@@ -14,6 +14,10 @@ ActiveAdmin.register PlayerStatistic do
     column :goals_saves
     column :passes_total
     column :passes_accuracy
+    column :live
+    column "Points" do |player_statistic|
+      player_statistic.calculate_points
+    end
     column :created_at
     actions
   end
@@ -38,6 +42,7 @@ ActiveAdmin.register PlayerStatistic do
       f.input :goals_saves
       f.input :passes_total
       f.input :passes_accuracy
+      f.input :live
     end
     f.actions
   end

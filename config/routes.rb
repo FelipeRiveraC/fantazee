@@ -42,6 +42,11 @@ Rails.application.routes.draw do
           get :my_teams
         end
       end
+      resources :player_statistics, only: [:index] do
+        collection do
+          get :live
+        end
+      end
     end
   end
 

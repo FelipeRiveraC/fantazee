@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_02_06_131023) do
+ActiveRecord::Schema[7.0].define(version: 2025_02_26_172414) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -62,6 +62,16 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_06_131023) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "fixtures", id: :string, force: :cascade do |t|
+    t.string "match_id", null: false
+    t.integer "api_id", null: false
+    t.date "date", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["api_id"], name: "index_fixtures_on_api_id", unique: true
+    t.index ["match_id"], name: "index_fixtures_on_match_id"
+  end
+
   create_table "matches", id: :string, force: :cascade do |t|
     t.integer "api_id", null: false
     t.date "date", null: false
@@ -109,6 +119,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_06_131023) do
     t.integer "penalty_saved"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "live", default: false
     t.index ["match_id"], name: "index_player_statistics_on_match_id"
     t.index ["player_id"], name: "index_player_statistics_on_player_id"
   end
@@ -219,6 +230,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_02_06_131023) do
   end
 
   add_foreign_key "draft_teams", "users"
+  add_foreign_key "fixtures", "matches"
   add_foreign_key "player_statistics", "matches"
   add_foreign_key "player_statistics", "players"
   add_foreign_key "players_draft_teams", "draft_teams"

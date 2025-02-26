@@ -136,6 +136,7 @@ const getPlayerById = (playerId: string | null) =>
       await createDraftTeam.mutateAsync({
         name: draftName,
         league,
+        formation: selectedFormation,
         players: playerIds
       });
       

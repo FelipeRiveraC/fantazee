@@ -83,6 +83,6 @@ class Api::V1::DraftTeamsController < Api::V1::BaseController
   end
 
   def draft_team_params
-    params.require(:draft_team).permit(:name, :league, players: [])
+    params.require(:draft_team).permit(:name, :league, :formation, players: [])
   end
 end
